@@ -1,0 +1,3 @@
+# Pooly
+
+Simple process pool.
