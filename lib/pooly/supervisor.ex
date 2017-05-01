@@ -1,18 +1,16 @@
 defmodule Pooly.Supervisor do
   use Supervisor
 
-  # API
-
-  def start_link({_, _, _} = mfa) do
-    Supervisor.start_link(__MODULE__, mfa)
+  def start_link(pool_cofig) do
+    Supervisor.start_link(__MODULE__, pool_cofig)
   end
 
-  # Callbacks
+  def init(pool_config) do
+    children = [
+      worker(Pooly.Server, [self, pool_config])
+    ]
 
-  def init({m, f, a}) do
-    worker_opts = [restart: :permanent, function: f]
-    children = [worker(m, a, worker_opts)]
-    opts = [strategy: :simple_one_for_one, max_restarts: 5, max_seconds: 5]
+    opts = [strategy: :one_for_all]
 
     supervise(children, opts)
   end
